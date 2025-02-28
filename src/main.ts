@@ -16,7 +16,6 @@ const FORMAT = {
     PNG: 'png',
 } as const;
 
-
 const BACK ='back';
 const FRONT ='front';
 
@@ -147,7 +146,7 @@ class App {
         const originDevice = this._modelMap.device.clone();
         const originDeviceVector = this._getObjectSize(originDevice);
         const customDeviceGeometry = new THREE.BoxGeometry(...originDeviceVector)
-        customDeviceGeometry.scale(1,Number(deviceUnit[0]),1);
+        customDeviceGeometry.scale(1,Number(deviceUnit[0]), 1);
         const deviceMaterial = this._getDeviceMaterial(deviceUnit);
         return new THREE.Mesh(customDeviceGeometry, deviceMaterial);
     }
@@ -196,8 +195,9 @@ class App {
     }
 
     private _addModel(){
-        this._addCabinets();
-        this._addTilesGroup(11, 10);
+        this._createTrail();
+        // this._addCabinets();
+        // this._addTilesGroup(11, 10);
         
     }
 
@@ -262,6 +262,47 @@ class App {
         this._scene.add(light);
     }
 
+    private _createTrail(){
+
+        const originDevice = this._modelMap.device.clone();
+        const cabinet = this._modelMap.cabinet.clone();
+        const group = new THREE.Group();
+        
+        // group.add(cabinet);
+        group.add(originDevice);
+        
+        // cabinet.scale.set(0.9, 0.9, 0.9);
+        // cabinet.lookAt(-1, 0, 0);
+        // originDevice.lookAt(-1, 0, 0);
+
+        this._scene.add(group);
+        // this._scene.add(cabinet);
+        // this._scene.add(originDevice);
+        
+        const { z: deviceHeight, x: deviceWidth } = this._getObjectSize(originDevice);
+      
+        const trailWidth = 0.05;
+        const rightTrail = new THREE.Mesh(
+            new THREE.BoxGeometry( 0.01, 2, trailWidth),
+            new THREE.MeshBasicMaterial({color: 'orange'})
+        );
+
+
+        rightTrail.position.y = 1
+        rightTrail.position.z = -deviceHeight/2 +trailWidth/2;
+        const leftTrail = rightTrail.clone();
+        
+        leftTrail.position.x = -deviceWidth/2;
+        rightTrail.position.x = deviceWidth/2;
+        group.add(rightTrail);
+        group.add(leftTrail);
+        
+
+        group.lookAt(-1, 0, 0);
+        this._scene.add(group);
+        
+    }
+
     private _setupRenderer(){
         this._renderer =  new THREE.WebGLRenderer({ antialias : true });
         this._renderer.setPixelRatio(window.devicePixelRatio);
@@ -277,7 +318,6 @@ class App {
             new THREE.MeshBasicMaterial({color:'lavender'}),
             new THREE.MeshBasicMaterial({map: this._deviceTextureMap[deviceUnit][BACK]}),
             new THREE.MeshBasicMaterial({map: this._deviceTextureMap[deviceUnit][FRONT]}),
-            
         ]
     }
 }
