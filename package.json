@@ -14,6 +14,8 @@
     "vite": "^6.2.0"
   },
   "dependencies": {
+    "@types/gsap": "^3.0.0",
+    "gsap": "^3.12.7",
     "three": "^0.173.0"
   }
 }
